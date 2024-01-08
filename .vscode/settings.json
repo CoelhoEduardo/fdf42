@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "*.tcc": "c",
+        "fstream": "c",
+        "unistd.h": "c",
+        "fdf.h": "c",
+        "libft.h": "c"
+    }
+}
