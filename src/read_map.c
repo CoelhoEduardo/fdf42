@@ -1,72 +1,95 @@
 #include "fdf.h"
 
-static void set(t_pixel *matrix, int value, int color, fdf *data)
+static int	base(char *str, int base)
 {
-    matrix->position_x = matrix->position_y;
-    matrix->position_y = matrix->position_x;
-    matrix->value = value;
-    matrix->color = color;
-    free(data->split[data->j]);
-    if (data->hex[1])
-        free(data->hex[1]);
-    free(data->hex[0]);
-    free(data->hex);
+	int	i;
+	int	nbr;
+	int	sign;
+
+	i = 0;
+	nbr = 0;
+	sign = 1;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	while (str[i])
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+			nbr = nbr * base + str[i] - '0';
+		else if (str[i] >= 'A' && str[i] <= 'F')
+			nbr = nbr * base + str[i] - 'A' + 10;
+		else if (str[i] >= 'a' && str[i] <= 'f')
+			nbr = nbr * base + str[i] - 'a' + 10;
+		i++;
+	}
+	return (nbr * sign);
 }
 
-static void reader(char *file_name, t_pixel **matrix, fdf *data)
+static void	set_color(char *split, fdf *data)
 {
-    data->fd = open(file_name, O_RDONLY);
-    data->i = 0;
-    data->x = 0;
-    while (data->i < data->row)
-    {
-        data->line = get_next_line(data->fd);
-        data->j = 0;
-        data->split = ft_split(data->line, ' ');
-        data->y = 0;
-        while (data->j < data->collumn)
-        {
-            data->hex = ft_split(data->split[data->j], ',');
-            if (data->hex[1])
-                set(&matrix[data->i][data->j], ft_atoi(data->split[data->j]) * 5 / 4, 0xFFFFFF, data);
-            else
-                set(&matrix[data->i][data->j], ft_atoi(data->split[data->j]) * 5 / 4, 0xFF0000FF, data);
-            data->j++;
-        }
-        data->i++;
-        free(data->line);
-        free(data->split);
-    }
-    close(data->fd);
+	data->hex = ft_split(split, ',');
+	if (data->hex[1])
+		data->color = base(data->hex[1], 16);
+	else
+		data->color = 0xFFFFFF;
+	free(data->hex);
 }
 
-t_pixel **mallocando(int rows, int collumns)
+void	fill_matrix(int *matrix, char *line, fdf *data)
 {
-    int i;
-    t_pixel **matrix;
+	int	i;
 
-    matrix = (t_pixel **)malloc(sizeof(t_pixel *) * (rows + 1));
-    if (!matrix)
-        return (NULL);
-    i = 0;
-    while (i < rows){
-        matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * (collumns + 1));
-        if (!matrix[i])
-            return (NULL);
-        i++;
-    }
-    if (!matrix)
-        return (NULL);
-    return (matrix);
+	data->split = ft_split(line, ' ');
+	i = 0;
+	while (i < data->collumn)
+	{
+		matrix[i] = ft_atoi(data->split[i]);
+		set_color(data->split[i], data);
+		i++;
+	}
+	free(data->split);
 }
 
-t_pixel **read_map(char *file_name, fdf *data)
+int	**malloc_matrix(int rows, int collumns)
 {
-    data->row = get_rows(file_name);	
-  	data->collumn = get_collumn(file_name);
-    data->matrix = mallocando(data->row, data->collumn);
-    if (!data->matrix)
-        return (NULL);
-    reader(file_name, data->matrix, data);
-    return (data->matrix);
+	int	i;
+	int	**matrix;
+
+	matrix = (int **)malloc(sizeof(int *) * (rows + 1));
+	if (!matrix)
+		return (NULL);
+	i = 0;
+	while (i < rows)
+	{
+		matrix[i] = (int *)malloc(sizeof(int) * (collumns + 1));
+		if (!matrix[i])
+			return (NULL);
+		i++;
+	}
+	if (!matrix)
+		return (NULL);
+	return (matrix);
+}
+
+void	read_map(char *file_name, fdf *data)
+{
+	int		fd;
+	char	*line;
+	int		i;
+
+	data->row = get_rows(file_name);
+	data->collumn = get_collumn(file_name);
+	data->matrix = malloc_matrix(data->row, data->collumn);
+	fd = open(file_name, O_RDONLY, 0);
+	i = 0;
+	while (i < data->row)
+	{
+		line = get_next_line(fd);
+		fill_matrix(data->matrix[i], line, data);
+		i++;
+	}
+	close(fd);
+	data->matrix[i] = NULL;
 }
