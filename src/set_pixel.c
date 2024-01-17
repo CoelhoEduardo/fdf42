@@ -31,9 +31,10 @@ void	connect_line(float x, float y, float x1, float y1, fdf *data)
 	int		max;
 	int		z;
 	int		z1;
+	int	color;
 
-	z = data->matrix[(int)y][(int)x];
-	z1 = data->matrix[(int)y1][(int)x1];
+	z = data->matrix[(int)y][(int)x].z;
+	z1 = data->matrix[(int)y1][(int)x1].z;
 	
     // // zoom:
 	x *= data->zoom;
@@ -57,10 +58,13 @@ void	connect_line(float x, float y, float x1, float y1, fdf *data)
     x_step /= max;
 	y_step /= max;
 	
-    while ((int)(x - x1) || (int)(y - y1))
+	color = (z1 || z) ? 0xFFFFFF : 0xBBFAFF;
+	color = (z1 != z) ? 0xFFFFFF : color;
+    
+	while ((int)(x - x1) || (int)(y - y1))
 	{
 		if ((x > 0 && x < WIDTH) && (y > 0 && y < HEIGHT))
-			mlx_put_pixel(data->img, x, y, data->color);
+			mlx_put_pixel(data->img, x, y, color);
 		x += x_step;
 		y += y_step;
 	}

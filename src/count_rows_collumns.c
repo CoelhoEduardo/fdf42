@@ -28,6 +28,7 @@ int	get_rows(char *file_name)
 	fd = open(file_name, O_RDONLY);
 	row = 0;
 	gnl = get_next_line(fd);
+	free(gnl);
 	while (gnl)
 	{
 		row++;
@@ -35,7 +36,6 @@ int	get_rows(char *file_name)
 		free(gnl);
 	}
 	close(fd);
-	free(gnl);
 	return (row);
 }
 

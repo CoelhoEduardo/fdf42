@@ -15,10 +15,8 @@ typedef struct s_pixel
 {
     int x;
     int y;
-    int x1;
-    int y1;
     int z;
-    int z1;
+    int color;
 
 }   t_pixel;
 
@@ -26,34 +24,18 @@ typedef struct
 {
     int row;
     int collumn;
-    int j;
-    int x;
-    int y;
-    int color;
-    int shift_y;
-    int shift_x;
+    int zoom;
     char **hex;
     char **split;
-     int zoom;
-    int **matrix;
+    t_pixel **matrix;
 
     mlx_image_t *img;
     mlx_t *mlx;
 }   fdf;
 
-typedef struct s_params
-{
-    float x;
-    float y;
-    float x1;
-    float y1;
-    int z;
-    int z1;
-}   t_params;
-
 int get_rows(char *file_name);
 int get_collumn(char *file_name);
-void read_map(char  *file_name, fdf *data);
+t_pixel	**read_map(char *file_name, int row, int column);
 void set_pixel(fdf *data);
 #endif
 

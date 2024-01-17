@@ -27,45 +27,60 @@ static int	base(char *str, int base)
 	return (nbr * sign);
 }
 
-static void	set_color(char *split, fdf *data)
+int	set_color(char *split, fdf *data)
 {
+	int color;
+
 	data->hex = ft_split(split, ',');
 	if (data->hex[1])
-		data->color = base(data->hex[1], 16);
+		color = (base(data->hex[1], 16) << 8);
 	else
-		data->color = 0xFFFFFF;
+		color = 0xFFFFFF;
+	free(data->hex[0]);
 	free(data->hex);
+	return (color);
 }
 
-void	fill_matrix(int *matrix, char *line, fdf *data)
+void	mount_matrix(fdf *data, char *file_name, t_pixel **matrix)
 {
+	int	fd;
+	char	*line;
 	int	i;
+	int	j; 
 
-	data->split = ft_split(line, ' ');
 	i = 0;
-	while (i < data->collumn)
+	fd = open(file_name, O_RDONLY);
+	while (i < data->row)
 	{
-		matrix[i] = ft_atoi(data->split[i]);
-		set_color(data->split[i], data);
+		line = get_next_line(fd);
+		free(line);
+		data->split = ft_split(line, ' ');
+		j = 0;
+		while (j < data->collumn)
+		{
+			matrix[i][j].z = ft_atoi(data->split[j]);
+			matrix[i][j].color = set_color(data->split[j], data);
+			free(data->split[j]);
+			j++;
+		}
+		free(data->split);
 		i++;
 	}
-	free(data->split);
+	free(matrix);
+	close (fd);
 }
 
-int	**malloc_matrix(int rows, int collumns)
+t_pixel	**malloc_matrix(int rows, int collumns)
 {
 	int	i;
-	int	**matrix;
+	t_pixel	**matrix;
 
-	matrix = (int **)malloc(sizeof(int *) * (rows + 1));
-	if (!matrix)
-		return (NULL);
+	matrix = (t_pixel **)malloc(sizeof(t_pixel *) * (rows + 1));
 	i = 0;
 	while (i < rows)
 	{
-		matrix[i] = (int *)malloc(sizeof(int) * (collumns + 1));
-		if (!matrix[i])
-			return (NULL);
+		matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * (collumns + 1));
+		free(matrix[i]);
 		i++;
 	}
 	if (!matrix)
@@ -73,23 +88,14 @@ int	**malloc_matrix(int rows, int collumns)
 	return (matrix);
 }
 
-void	read_map(char *file_name, fdf *data)
+t_pixel	 **read_map(char *file_name, int row, int column)
 {
-	int		fd;
-	char	*line;
-	int		i;
+	fdf data;
 
-	data->row = get_rows(file_name);
-	data->collumn = get_collumn(file_name);
-	data->matrix = malloc_matrix(data->row, data->collumn);
-	fd = open(file_name, O_RDONLY, 0);
-	i = 0;
-	while (i < data->row)
-	{
-		line = get_next_line(fd);
-		fill_matrix(data->matrix[i], line, data);
-		i++;
-	}
-	close(fd);
-	data->matrix[i] = NULL;
+	data.row = row;
+	data.collumn = column;
+	data.matrix = malloc_matrix(data.row, data.collumn);
+	mount_matrix(&data, file_name, data.matrix);
+
+	return (data.matrix);
 }
