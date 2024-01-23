@@ -13,18 +13,40 @@
 
 typedef struct s_pixel
 {
-    int x;
-    int y;
+    float x;
+    float y;
     int z;
-    int color;
+    uint32_t color;
 
 }   t_pixel;
+
+typedef struct s_params
+{
+    float   x;
+    float   y;
+    float   x1;
+    float   y1;
+    float   x2;
+    float   y2;
+    float	x_step;
+	float	y_step;
+	int		max;
+	int		z;
+	int		z1;
+    int i;
+    int j;
+    int err;
+	uint32_t		color;
+
+}   t_params;
+
 
 typedef struct
 {
     int row;
     int collumn;
     int zoom;
+    int z_scale;
     char **hex;
     char **split;
     t_pixel **matrix;

@@ -14,6 +14,10 @@ static void	ft_hook(void *param)
 
 	if (mlx_is_key_down(data.mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data.mlx);
+	// mlx_delete_image(data.mlx, data.img);
+	// data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
+	// mlx_image_to_window(data.mlx, data.img, 0, 0);
+	// set_pixel(&data);
 }
 
 int	main(int argc, char **argv)

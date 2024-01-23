@@ -18,75 +18,98 @@ int	ft_max_value(int a, int b)
 
 void	isometric(float *x, float *y, int z)
 {
-	*x = (*x - *y) * cos(0.8);
-	*y = (*x + *y) * sin(0.8) - z;
-	*x += 650;
-	*y += 50;
+	*x = (*x - *y) * cos(0.9);
+	*y = (*x + *y) * sin(0.9) - z;
 }
 
-void	connect_line(float x, float y, float x1, float y1, fdf *data)
+void	set_zoom(t_params *point, fdf *data)
 {
-	float	x_step;
-	float	y_step;
-	int		max;
-	int		z;
-	int		z1;
-	int	color;
+	point->x1 *= data->zoom;
+	point->y1 *= data->zoom;
+	point->x2 *= data->zoom;
+	point->x2 *= data->zoom;
+}
 
-	z = data->matrix[(int)y][(int)x].z;
-	z1 = data->matrix[(int)y1][(int)x1].z;
-	
-    // // zoom:
-	x *= data->zoom;
-	y *= data->zoom;
-	x1 *= data->zoom;
-	y1 *= data->zoom;
-	
-    isometric(&x, &y, z);
-	isometric(&x1, &y1, z1);
-	
-    x += 100;
-	y += 100;
-	x1 += 100;
-	y1 += 100;
-	
-    x_step = x1 - x;
-	y_step = y1 - y;
-	
-    max = ft_max_value(ft_mod(x_step), ft_mod(y_step));
-	
-    x_step /= max;
-	y_step /= max;
-	
-	color = (z1 || z) ? 0xFFFFFF : 0xBBFAFF;
-	color = (z1 != z) ? 0xFFFFFF : color;
-    
-	while ((int)(x - x1) || (int)(y - y1))
+void	set_params(t_params *point, fdf *data)
+{
+	set_zoom(point, data);
+	isometric(&point->x1, &point->y1, point->z);
+	isometric(&point->x2, &point->y2, point->z1);
+	point->x1 += 600;
+	point->y1 += 300;
+	point->x2 += 600;
+	point->x2 += 300;
+}
+
+void	calc_d(t_params *point, t_pixel **matrix, int i, int j)
+{
+	point->x1 = point->x;
+	point->y1 = point->y;
+	point->x2 = matrix[i][j].x;
+	point->y2 = matrix[i][j].y;
+	point->x_step = abs((int)point->x2 - (int)point->x1);
+	point->y_step = abs((int)point->y2 - (int)point->y1);
+	// point->max = ft_max_value(ft_mod(point->x_step), ft_mod(point->y_step));
+	// point->x_step /= point->max;
+	// point->y_step /= point->max;
+}
+
+void	conditioner(t_params *p)
+{
+	if (p->x_step > p->y_step)
+		p->err = p->x_step / 2;
+	else
+		p->err = -p->y_step / 2;
+}
+
+void	put_pixel(t_params *point, fdf *data)
+{
+	point->z = data->matrix[(int)point->y1][(int)point->x1].z;
+	point->z1 = data->matrix[(int)point->y2][(int)point->x2].z;
+	// set_params(point, data);
+	point->color = (point->z1 || point->z) ? 0xFFFFFF : 0xBBFAFF;
+	point->color = (point->z1 != point->z) ? 0xFFFFFF : point->color;
+	while ((int)(point->x1 - point->x2) || (int)(point->y1 - point->y2))
 	{
-		if ((x > 0 && x < WIDTH) && (y > 0 && y < HEIGHT))
-			mlx_put_pixel(data->img, x, y, color);
-		x += x_step;
-		y += y_step;
+		if ((point->x1 > 0 && point->x1 < WIDTH) && (point->y1 > 0 && point->y1 < HEIGHT))
+			mlx_put_pixel(data->img, point->x1, point->y1, point->color);
+		point->x1 += point->x_step;
+		point->y1 += point->y_step;
+	}
+
+}
+
+void	connect_line(t_pixel **matrix, t_params point, fdf *data)
+{	
+	if (point.j + 1 < data->collumn)
+	{
+		calc_d(&point, matrix, point.i, point.j + 1);
+		conditioner(&point);
+		put_pixel(&point, data);
+	}
+	if (point.i + 1 < data->row)
+	{	
+		calc_d(&point, matrix, point.i + 1, point.j);
+		conditioner(&point);
+		put_pixel(&point, data);
 	}
 }
 
 void	set_pixel(fdf *data)
 {
-	int	x;
-	int	y;
+	t_params	p;
 
-	y = 0;
-	while (y < data->row)
+	p.i = 0;
+	while (p.i < data->row)
 	{
-		x = 0;
-		while (x < data->collumn)
+		p.j = 0;
+		while (p.j < data->collumn)
 		{
-			if (x < data->collumn - 1)
-				connect_line(x, y, x + 1, y, data);
-			if (y < data->row - 1)
-				connect_line(x, y, x, y + 1, data);
-			x++;
+			p.x = data->matrix[p.i][p.j].x;
+			p.y = data->matrix[p.i][p.j].y;
+			connect_line(data->matrix, p, data);
+			p.j++;
 		}
-		y++;
+		p.i++;
 	}
 }

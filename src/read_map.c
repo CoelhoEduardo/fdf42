@@ -53,7 +53,6 @@ void	mount_matrix(fdf *data, char *file_name, t_pixel **matrix)
 	while (i < data->row)
 	{
 		line = get_next_line(fd);
-		free(line);
 		data->split = ft_split(line, ' ');
 		j = 0;
 		while (j < data->collumn)
@@ -63,10 +62,11 @@ void	mount_matrix(fdf *data, char *file_name, t_pixel **matrix)
 			free(data->split[j]);
 			j++;
 		}
-		free(data->split);
 		i++;
+		free(line);
+		free(data->split);
+		
 	}
-	free(matrix);
 	close (fd);
 }
 
@@ -75,17 +75,21 @@ t_pixel	**malloc_matrix(int rows, int collumns)
 	int	i;
 	t_pixel	**matrix;
 
-	matrix = (t_pixel **)malloc(sizeof(t_pixel *) * (rows + 1));
+	matrix = ft_calloc((rows + 1), sizeof(t_pixel *));
+	if (!matrix)
+		return (NULL);
 	i = 0;
 	while (i < rows)
 	{
-		matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * (collumns + 1));
-		free(matrix[i]);
+		matrix[i] = ft_calloc((collumns + 1), sizeof(t_pixel));
+		if (!matrix[i])
+			return (NULL);
 		i++;
 	}
 	if (!matrix)
 		return (NULL);
 	return (matrix);
+	free(matrix);
 }
 
 t_pixel	 **read_map(char *file_name, int row, int column)
