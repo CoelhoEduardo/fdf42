@@ -22,23 +22,21 @@ typedef struct s_pixel
 
 typedef struct s_params
 {
-    float   x;
-    float   y;
-    float   x1;
-    float   y1;
-    float   x2;
-    float   y2;
-    float	x_step;
-	float	y_step;
-	int		max;
+    int   x;
+    int   y;
+    int   x1;
+    int   y1;
+    int	dx;
+	int	dy;
 	int		z;
 	int		z1;
     int i;
     int j;
-    int err;
+    int p;
 	uint32_t		color;
 
 }   t_params;
+
 
 
 typedef struct
@@ -58,6 +56,6 @@ typedef struct
 int get_rows(char *file_name);
 int get_collumn(char *file_name);
 t_pixel	**read_map(char *file_name, int row, int column);
-void set_pixel(fdf *data);
+void	set_pixel(fdf *data);
 #endif
 
