@@ -29,7 +29,7 @@ static int	base(char *str, int base)
 
 int	set_color(char *split, fdf *data)
 {
-	int color;
+	int	color;
 
 	data->hex = ft_split(split, ',');
 	if (data->hex[1])
@@ -43,36 +43,33 @@ int	set_color(char *split, fdf *data)
 
 void	mount_matrix(fdf *data, char *file_name, t_pixel **matrix)
 {
-	int	fd;
-	char	*line;
-	int	i;
-	int	j; 
+	int			fd;
+	char		*line;
+	t_params	node;
 
-	i = 0;
+	node.i = 0;
 	fd = open(file_name, O_RDONLY);
-	while (i < data->row)
+	while (node.i < data->row)
 	{
 		line = get_next_line(fd);
 		data->split = ft_split(line, ' ');
-		j = 0;
-		while (j < data->collumn)
+		node.j = 0;
+		while (node.j < data->column)
 		{
-			matrix[i][j].z = ft_atoi(data->split[j]);
-			matrix[i][j].color = set_color(data->split[j], data);
-			free(data->split[j]);
-			j++;
+			matrix[node.i][node.j].z = ft_atoi(data->split[node.j]);
+			free(data->split[node.j]);
+			node.j++;
 		}
-		i++;
+		node.i++;
 		free(line);
 		free(data->split);
-		
 	}
-	close (fd);
+	close(fd);
 }
 
-t_pixel	**malloc_matrix(int rows, int collumns)
+t_pixel	**malloc_matrix(int rows, int columns)
 {
-	int	i;
+	int		i;
 	t_pixel	**matrix;
 
 	matrix = ft_calloc((rows + 1), sizeof(t_pixel *));
@@ -81,7 +78,7 @@ t_pixel	**malloc_matrix(int rows, int collumns)
 	i = 0;
 	while (i < rows)
 	{
-		matrix[i] = ft_calloc((collumns + 1), sizeof(t_pixel));
+		matrix[i] = ft_calloc((columns + 1), sizeof(t_pixel));
 		if (!matrix[i])
 			return (NULL);
 		i++;
@@ -92,14 +89,32 @@ t_pixel	**malloc_matrix(int rows, int collumns)
 	free(matrix);
 }
 
-t_pixel	 **read_map(char *file_name, int row, int column)
+void	move_to_center(t_pixel **map, int rows, int columns, int dist)
 {
-	fdf data;
+	int	i;
+	int	j;
 
-	data.row = row;
-	data.collumn = column;
-	data.matrix = malloc_matrix(data.row, data.collumn);
+	i = 0;
+	while (i < rows)
+	{
+		j = 0;
+		while (j < columns)
+		{
+			map[i][j].x += dist;
+			map[i][j].y -= dist;
+			j++;
+		}
+		i++;
+	}
+}
+
+t_pixel	**read_map(char *file_name, int rows, int columns)
+{
+	fdf	data;
+
+	data.row = rows;
+	data.column = columns;
+	data.matrix = malloc_matrix(data.row, data.column);
 	mount_matrix(&data, file_name, data.matrix);
-
 	return (data.matrix);
 }

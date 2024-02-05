@@ -39,20 +39,20 @@ int	get_rows(char *file_name)
 	return (row);
 }
 
-int	get_collumn(char *file_name)
+int	get_column(char *file_name)
 {
-	int		collumn;
+	int		column;
 	int		fd;
 	char	*gnl;
 
 	fd = open(file_name, O_RDONLY);
 	gnl = get_next_line(fd);
-	collumn = ft_getwords(gnl, ' ');
+	column = ft_getwords(gnl, ' ');
 	while (gnl != NULL)
 	{
 		free(gnl);
 		gnl = get_next_line(fd);
 	}
 	close(fd);
-	return (collumn);
+	return (column);
 }
