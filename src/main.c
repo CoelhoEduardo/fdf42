@@ -26,10 +26,6 @@ static void	ft_hook(void *param)
 	data.mlx = param;
 	if (mlx_is_key_down(data.mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data.mlx);
-	mlx_delete_image(data.mlx, data.img);
-	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
-	mlx_image_to_window(data.mlx, data.img, 0, 0);
-	set_pixel(data, data.matrix, data.rows, data.columns);
 }
 
 t_enum	set_enum_struct(void)
@@ -46,7 +42,7 @@ t_enum	set_enum_struct(void)
 	return (enm);
 }
 
-int	main(int argc, char **argv)
+int32_t	main(int argc, char **argv)
 {
 	fdf		data;
 	t_enum	enm;
@@ -67,7 +63,7 @@ int	main(int argc, char **argv)
 	if (!data.img || (mlx_image_to_window(data.mlx, data.img, 0, 0) < 0))
 		ft_error("Oooh something is wrong");
 	isometric(data.matrix, data.rows, data.columns);
-	set_pixel(data, data.matrix, data.rows, data.columns);
+	set_pixel(data, data.matrix);
 	mlx_loop_hook(data.mlx, ft_hook, data.mlx);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);

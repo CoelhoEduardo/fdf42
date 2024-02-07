@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   isometric.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/06 22:03:32 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/06 23:15:15 by ecoelho-         ###   ########.fr       */
+/*   Updated: 2024/02/07 09:00:29 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ void    isometric(t_pixel   **matrix, int rows, int columns)
         j = 0;
         while (j < columns)
         {
-            matrix[i][j].x = (matrix[i][j].x - matrix[i][j].y * cos(0.8));
-            matrix[i][j].y = (matrix[i][j].x + matrix[i][j].y * sin(0.9))  - matrix[i][j].z;
-            matrix[i][j].x += 500;
-            matrix[i][j].y += 200;
+            matrix[i][j].x = (matrix[i][j].x - matrix[i][j].y) * cos(0.6);
+            matrix[i][j].y = (matrix[i][j].x + matrix[i][j].y) * sin(0.5)  - matrix[i][j].z;
+            matrix[i][j].x += 600;
+            matrix[i][j].y += 300;
             j++;
         }
         i++;

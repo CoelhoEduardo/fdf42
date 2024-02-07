@@ -1,17 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_map.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/02/07 11:11:06 by eduardocoel       #+#    #+#             */
+/*   Updated: 2024/02/07 11:11:07 by eduardocoel      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
-static int	base(char *str, int base)
+static uint32_t	base(char *str, uint32_t base)
 {
-	int	i;
-	int	nbr;
-	int	sign;
+	int			i;
+	uint32_t	nbr;
+	uint32_t	sign;
 
 	i = 0;
 	nbr = 0;
 	sign = 1;
-	if (str[i] == '-')
+	if (str[i] == '-' || str[i] == '+')
 	{
-		sign = -1;
+		if (str[i] == '-')
+			sign = -1;
 		i++;
 	}
 	while (str[i])
@@ -27,7 +40,7 @@ static int	base(char *str, int base)
 	return (nbr * sign);
 }
 
-static void	set_values(t_pixel *matrix, int value, int color, fdf *data)
+static void	set_values(t_pixel *matrix, int value, uint32_t color, fdf *data)
 {
 	matrix->x = data->y;
 	matrix->y = data->x;
@@ -56,10 +69,10 @@ void	mount_matrix(fdf data, char *file_name, t_pixel **matrix, float dist)
 			data.hex = ft_split(data.split[data.j], ',');
 			if (data.hex[1])
 				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
-						* dist / 4, base(data.hex[1], 16), &data);
+					* dist / 4, (base(data.hex[1], 16) << 8) | 0xff, &data);
 			else
 				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
-						* dist / 4, 0xFFFFFF, &data);
+					* dist / 4, 0xffffffff, &data);
 			data.y += dist;
 			data.j++;
 		}
