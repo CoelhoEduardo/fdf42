@@ -24,35 +24,44 @@ typedef struct s_enum
 
 typedef struct s_pixel
 {
-	uint32_t	x;
-	uint32_t	y;
-	uint32_t	z;
-	int32_t		color;
+	int			x;
+	int			y;
+	int			z;
+	int			color;
 
 }				t_pixel;
 
 typedef struct s_params
 {
-	uint32_t	x;
-	uint32_t	y;
-	uint32_t	x1;
-	uint32_t	y1;
-	uint32_t	dx;
-	uint32_t	dy;
-	uint32_t	z;
-	uint32_t	z1;
-	uint32_t	i;
-	uint32_t	j;
-	uint32_t	p;
-	int32_t		color;
-	int			zoom;
+	int			x;
+	int			y;
+	int			x1;
+	int			y1;
+	int			x2;
+	int			y2;
+	int			dx;
+	int			dy;
+	int			sx;
+	int			sy;
+	int			i;
+	int			j;
+	int			rows;
+	int			columns;
+	int			slo_error;
+	int			err;
 
 }				t_params;
 
 typedef struct
 {
-	uint32_t	row;
-	uint32_t	column;
+	int			i;
+	int			j;
+	int			x;
+	int			y;
+	int			fd;
+	int			rows;
+	int			columns;
+	char		*line;
 	int			zoom;
 	int			z_scale;
 	char		**hex;
@@ -65,6 +74,7 @@ typedef struct
 
 int				get_rows(char *file_name);
 int				get_column(char *file_name);
-t_pixel			**read_map(char *file_name, int row, int column);
-void			set_pixel(fdf *data);
+t_pixel			**read_map(char *file_name, int rows, int columns, t_enum dist);
+void			set_pixel(fdf data, t_pixel **matrix, int rows, int columns);
+void			isometric(t_pixel **matrix, int rows, int columns);
 #endif

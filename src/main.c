@@ -1,9 +1,22 @@
 #include "fdf.h"
 
-static void	ft_error(void)
+void	ft_error(char *str)
 {
-	fprintf(stderr, "%s", mlx_strerror(mlx_errno));
+	ft_putstr_fd(str, 1);
 	exit(EXIT_FAILURE);
+}
+
+void	free_matrix(t_pixel **matrix, int rows)
+{
+	int	i;
+
+	i = 0;
+	while (i < rows)
+	{
+		free(matrix[i]);
+		i++;
+	}
+	free(matrix);
 }
 
 static void	ft_hook(void *param)
@@ -13,25 +26,51 @@ static void	ft_hook(void *param)
 	data.mlx = param;
 	if (mlx_is_key_down(data.mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data.mlx);
+	mlx_delete_image(data.mlx, data.img);
+	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
+	mlx_image_to_window(data.mlx, data.img, 0, 0);
+	set_pixel(data, data.matrix, data.rows, data.columns);
+}
+
+t_enum	set_enum_struct(void)
+{
+	t_enum	enm;
+
+	enm.case_1 = 0.5;
+	enm.case_2 = 1;
+	enm.case_3 = 2;
+	enm.case_4 = 4;
+	enm.case_5 = 7;
+	enm.case_6 = 15;
+	enm.case_7 = 25;
+	return (enm);
 }
 
 int	main(int argc, char **argv)
 {
-	fdf	data;
+	fdf		data;
+	t_enum	enm;
 
-	(void)argc;
+	if (argc != 2)
+	{
+		ft_putstr_fd("Invalid numbers of arguments", 1);
+		return(2);
+	}
 	data.mlx = mlx_init(WIDTH, HEIGHT, "FDF42", true);
 	if (!data.mlx)
-		ft_error();
+		ft_error("Oooh something is wrong");
+	data.rows = get_rows(argv[1]);
+	data.columns = get_column(argv[1]);
+	enm = set_enum_struct();
+	data.matrix = read_map(argv[1], data.rows, data.columns, enm);
 	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
 	if (!data.img || (mlx_image_to_window(data.mlx, data.img, 0, 0) < 0))
-		ft_error();
-	data.row = get_rows(argv[1]);
-	data.column = get_column(argv[1]);
-	data.matrix = read_map(argv[1], data.row, data.column);
-	set_pixel(&data);
+		ft_error("Oooh something is wrong");
+	isometric(data.matrix, data.rows, data.columns);
+	set_pixel(data, data.matrix, data.rows, data.columns);
 	mlx_loop_hook(data.mlx, ft_hook, data.mlx);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
+	free_matrix(data.matrix, data.rows);
 	return (EXIT_SUCCESS);
 }

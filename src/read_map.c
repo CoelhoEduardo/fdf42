@@ -27,44 +27,48 @@ static int	base(char *str, int base)
 	return (nbr * sign);
 }
 
-int	set_color(char *split, fdf *data)
+static void	set_values(t_pixel *matrix, int value, int color, fdf *data)
 {
-	int	color;
-
-	data->hex = ft_split(split, ',');
+	matrix->x = data->y;
+	matrix->y = data->x;
+	matrix->z = value;
+	matrix->color = color;
+	free(data->split[data->j]);
 	if (data->hex[1])
-		color = (base(data->hex[1], 16) << 8);
-	else
-		color = 0xFFFFFF;
+		free(data->hex[1]);
 	free(data->hex[0]);
 	free(data->hex);
-	return (color);
 }
 
-void	mount_matrix(fdf *data, char *file_name, t_pixel **matrix)
+void	mount_matrix(fdf data, char *file_name, t_pixel **matrix, float dist)
 {
-	int			fd;
-	char		*line;
-	t_params	node;
-
-	node.i = 0;
-	fd = open(file_name, O_RDONLY);
-	while (node.i < data->row)
+	data.fd = open(file_name, O_RDONLY);
+	data.x = 0;
+	data.i = 0;
+	while (data.i < data.rows)
 	{
-		line = get_next_line(fd);
-		data->split = ft_split(line, ' ');
-		node.j = 0;
-		while (node.j < data->column)
+		data.line = get_next_line(data.fd);
+		data.j = 0;
+		data.split = ft_split(data.line, ' ');
+		data.y = 0;
+		while (data.j < data.columns)
 		{
-			matrix[node.i][node.j].z = ft_atoi(data->split[node.j]);
-			free(data->split[node.j]);
-			node.j++;
+			data.hex = ft_split(data.split[data.j], ',');
+			if (data.hex[1])
+				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
+						* dist / 4, base(data.hex[1], 16), &data);
+			else
+				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
+						* dist / 4, 0xFFFFFF, &data);
+			data.y += dist;
+			data.j++;
 		}
-		node.i++;
-		free(line);
-		free(data->split);
+		data.x += dist;
+		data.i++;
+		free(data.line);
+		free(data.split);
 	}
-	close(fd);
+	close(data.fd);
 }
 
 t_pixel	**malloc_matrix(int rows, int columns)
@@ -72,13 +76,13 @@ t_pixel	**malloc_matrix(int rows, int columns)
 	int		i;
 	t_pixel	**matrix;
 
-	matrix = ft_calloc((rows + 1), sizeof(t_pixel *));
+	matrix = (t_pixel **)malloc(sizeof(t_pixel *) * rows);
 	if (!matrix)
 		return (NULL);
 	i = 0;
 	while (i < rows)
 	{
-		matrix[i] = ft_calloc((columns + 1), sizeof(t_pixel));
+		matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * columns);
 		if (!matrix[i])
 			return (NULL);
 		i++;
@@ -86,7 +90,6 @@ t_pixel	**malloc_matrix(int rows, int columns)
 	if (!matrix)
 		return (NULL);
 	return (matrix);
-	free(matrix);
 }
 
 void	move_to_center(t_pixel **map, int rows, int columns, int dist)
@@ -108,13 +111,29 @@ void	move_to_center(t_pixel **map, int rows, int columns, int dist)
 	}
 }
 
-t_pixel	**read_map(char *file_name, int rows, int columns)
+t_pixel	**read_map(char *file_name, int rows, int columns, t_enum dist)
 {
 	fdf	data;
 
-	data.row = rows;
-	data.column = columns;
-	data.matrix = malloc_matrix(data.row, data.column);
-	mount_matrix(&data, file_name, data.matrix);
+	data.rows = rows;
+	data.columns = columns;
+	data.matrix = malloc_matrix(data.rows, data.columns);
+	if (!data.matrix)
+		return (NULL);
+	if (rows >= 1000 || columns >= 1000)
+		mount_matrix(data, file_name, data.matrix, dist.case_1);
+	else if (rows >= 500 || columns >= 500)
+		mount_matrix(data, file_name, data.matrix, dist.case_2);
+	else if (rows >= 300 || columns >= 300)
+		mount_matrix(data, file_name, data.matrix, dist.case_3);
+	else if (rows > 150 || columns > 150)
+		mount_matrix(data, file_name, data.matrix, dist.case_4);
+	else if (rows >= 100 || columns >= 100)
+		mount_matrix(data, file_name, data.matrix, dist.case_5);
+	else if (rows >= 30 || columns >= 30)
+		mount_matrix(data, file_name, data.matrix, dist.case_6);
+	else if (rows <= 30 || columns <= 30)
+		mount_matrix(data, file_name, data.matrix, dist.case_7);
+	move_to_center(data.matrix, rows, columns, (rows + columns) / 4);
 	return (data.matrix);
 }

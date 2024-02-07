@@ -3,79 +3,95 @@
 /*                                                        :::      ::::::::   */
 /*   set_pixel.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 09:40:26 by eduardocoel       #+#    #+#             */
-/*   Updated: 2024/02/05 15:37:00 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/06 23:13:05 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-void	isometric(uint32_t *x, uint32_t *y, int z)
+
+void	calc_bre(t_params *node, int i, int j, t_pixel **matrix)
 {
-	*x = (*x - *y) * cos(0.8);
-	*y = (*x + *y) * sin(0.8) - z;
+	node->x1 = node->x;
+	node->y1 = node->y;
+	node->x2 = matrix[i][j].x;
+	node->y2 = matrix[i][j].y;
+	node->dx = abs(node->x2 - node->x1);
+	node->dy = abs(node->y2 - node->y1);
 }
 
-void	calc_bre(t_params *node, uint32_t x2, uint32_t y2, fdf *data)
+void	put_pixel(t_params node, fdf *data, int color)
 {
-	node->x = node->j;
-	node->y = node->i;
-	node->z = data->matrix[node->y][node->x].z;
-	node->z1 = data->matrix[y2][x2].z;
-	node->dx = x2 - node->x;
-	node->dy = y2 - node->y;
-	node->p = node->dy - node->dx;
-	if (node->z || node->z1)
-		node->color = 0x33ff33;
-	else
-		node->color = 0xffffff;
-}
-
-void	put_pixel(t_params *node, uint32_t x2, uint32_t y2, fdf *data)
-{
-	while ((node->x - x2) || (node->y - y2))
+	while (1)
 	{
-		mlx_put_pixel(data->img, node->x, node->y, node->color);
-		node->x += node->dx;
-		node->y += node->dy;
-		if (node->dx < node->dy)
-			node->p += 2 * node->dy;
-		else
-			node->p += 2 * (node->dy - (2 * node->dx));
+		if (node.x1 >= 0 && node.y1 >= 0 && node.x1 < 1920 && node.y1 < 1080)
+			mlx_put_pixel(data->img, node.x1, node.y1, color);
+		if (node.x1 == node.x2 && node.y1 == node.y2)
+			break ;
+		node.err = node.slo_error;
+		if (node.err > -node.dx)
+		{
+			node.slo_error -= node.dy;
+			node.x1 += node.sx;
+		}
+		if (node.err < node.dy)
+		{
+			node.slo_error += node.dx;
+			node.y1 += node.sy;
+		}
 	}
 }
 
-void	bresenham(t_params node, uint32_t x2, uint32_t y2, fdf *data)
+void	validation(t_params *node)
 {
-	calc_bre(&node, x2, y2, data);
-	node.zoom = 25;
-	node.x *= node.zoom;
-	node.y *= node.zoom;
-	x2 *= node.zoom;
-	y2 *= node.zoom;
-	node.x += 250;
-	node.y += 250;
-	x2 += 250;
-	y2 += 250;
-	put_pixel(&node, x2, y2, data);
+	if (node->x1 < node->x2)
+		node->sx = 1;
+	else
+		node->sx = -1;
+	if (node->y1 < node->y2)
+		node->sy = 1;
+	else
+		node->sy = -1;
+	if (node->dx > node->dy)
+		node->slo_error = node->dx / 2;
+	else
+		node->slo_error = -node->dy / 2;
 }
 
-void	set_pixel(fdf *data)
+void	connect_lines(t_params node, t_pixel **matrix, fdf *data)
+{
+	if (node.j + 1 < data->columns)
+	{
+		calc_bre(&node, node.i, node.j + 1, matrix);
+		validation(&node);
+		put_pixel(node, data, matrix[node.i][node.j].color);
+	}
+	if (node.i + 1 < data->rows)
+	{
+		calc_bre(&node, node.i + 1, node.j, matrix);
+		validation(&node);
+		put_pixel(node, data, matrix[node.i][node.j].color);
+	}
+}
+
+void	set_pixel(fdf data, t_pixel **matrix, int rows, int columns)
 {
 	t_params	node;
 
 	node.i = 0;
-	while (node.i < data->row)
+	node.rows = rows;
+	node.columns = columns;
+	while (node.i < node.rows)
 	{
 		node.j = 0;
-		while (node.j < data->column)
+		while (node.j < node.columns)
 		{
-			if (node.i + 1 < data->row)
-			bresenham(node, node.j, node.i + 1, data);
-			if (node.j + 1 < data->column)
-			bresenham(node, node.j + 1, node.i, data);
+			node.x = matrix[node.i][node.j].x;
+			node.y = matrix[node.i][node.j].y;
+			connect_lines(node, matrix, &data);
 			node.j++;
 		}
 		node.i++;
