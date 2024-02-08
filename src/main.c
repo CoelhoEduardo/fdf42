@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:17:06 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/08 12:38:46 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/08 20:48:07 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,12 @@ static void	ft_hook(void *param)
 	t_fetch	data;
 
 	data.mlx = param;
+	mlx_delete_image(data.mlx, data.img);
+	data.img = mlx_new_image(data.mlx, WIDTH, HEIGHT);
+	mlx_image_to_window(data.mlx, data.img, 0, 0);
 	if (mlx_is_key_down(data.mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data.mlx);
+	set_pixel(data, data.matrix);
 }
 
 void	config_rend(t_fetch data, char **argv)

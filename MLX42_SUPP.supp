@@ -46,3 +46,21 @@
    fun:__pthread_once_slow
    ...
 }
+{
+ <MLX_CODAM>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:glfwCreateWindow
+   ...
+}
+
+{
+ <MLX_CODAM>
+   Memcheck:Cond
+   fun:mlx_lstremove
+   fun:mlx_delete_image
+   fun:ft_hook
+   fun:mlx_loop
+   fun:config_rend
+}

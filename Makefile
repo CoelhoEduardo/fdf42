@@ -5,8 +5,10 @@ LIBFT	:= ./libft
 
 HEADERS	:= -I $(LIBMLX)/include -I $(LIBFT)
 LIBS	:= $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm $(LIBFT)/libft.a
-SRCS := $(shell find ./src -iname "*.c")
-OBJS := ${SRCS:.c=.o}
+SRCS_PATH	:= ./src/
+SRCS := main.c count_rows_columns.c read_map.c set_pixel.c isometric.c \
+		/utils/utils_to_main.c /utils/utils_to_read_map.c
+OBJS := $(addprefix $(SRCS_PATH), $(SRCS:.c=.o))
 
 all: libmlx libft $(NAME)
 
@@ -17,7 +19,7 @@ libft:
 	@make -C $(LIBFT)
 
 %.o: %.c 
-	@$(CC) $(CFLAGS) -g -o $@ -c $< $(HEADERS) && printf "Compiling $(notdir $<)"
+	@$(CC) $(CFLAGS) -g -o $@ -c $< $(HEADERS) && printf "Compiling $(notdir $<) \n"
 
 $(NAME): $(OBJS)
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME)
@@ -33,5 +35,7 @@ fclean: clean
 
 re:	clean all
 
-.PHONY: all, clean, fclean, re, libmlx, libft
+valgrind: all
+	valgrind --leak-check=full --gen-suppressions=all --suppressions=./MLX42_SUPP.supp ./FDF.a test_maps/42.fdf
 
+.PHONY: all, clean, fclean, re, libmlx, libft
