@@ -3,44 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   read_map.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 11:11:06 by eduardocoel       #+#    #+#             */
-/*   Updated: 2024/02/07 11:11:07 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/07 21:43:35 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-static uint32_t	base(char *str, uint32_t base)
-{
-	int			i;
-	uint32_t	nbr;
-	uint32_t	sign;
-
-	i = 0;
-	nbr = 0;
-	sign = 1;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign = -1;
-		i++;
-	}
-	while (str[i])
-	{
-		if (str[i] >= '0' && str[i] <= '9')
-			nbr = nbr * base + str[i] - '0';
-		else if (str[i] >= 'A' && str[i] <= 'F')
-			nbr = nbr * base + str[i] - 'A' + 10;
-		else if (str[i] >= 'a' && str[i] <= 'f')
-			nbr = nbr * base + str[i] - 'a' + 10;
-		i++;
-	}
-	return (nbr * sign);
-}
-
-static void	set_values(t_pixel *matrix, int value, uint32_t color, fdf *data)
+void	set(t_pixel *matrix, int value, uint32_t color, t_fetch *data)
 {
 	matrix->x = data->y;
 	matrix->y = data->x;
@@ -53,7 +25,19 @@ static void	set_values(t_pixel *matrix, int value, uint32_t color, fdf *data)
 	free(data->hex);
 }
 
-void	mount_matrix(fdf data, char *file_name, t_pixel **matrix, float dist)
+void	aux_matrix(t_fetch data, t_pixel **matrix, float dist)
+{
+	data.hex = ft_split(data.split[data.j], ',');
+	if (data.hex[1])
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
+			(ft_atoi_base(data.hex[1], 16) << 8) | 0xff, &data);
+	else
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
+			0xFFFFFFFF, &data);
+}
+
+void	mount_matrix(t_fetch data, char *file_name, t_pixel **matrix,
+		float dist)
 {
 	data.fd = open(file_name, O_RDONLY);
 	data.x = 0;
@@ -66,13 +50,7 @@ void	mount_matrix(fdf data, char *file_name, t_pixel **matrix, float dist)
 		data.y = 0;
 		while (data.j < data.columns)
 		{
-			data.hex = ft_split(data.split[data.j], ',');
-			if (data.hex[1])
-				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
-					* dist / 4, (base(data.hex[1], 16) << 8) | 0xff, &data);
-			else
-				set_values(&matrix[data.i][data.j], ft_atoi(data.split[data.j])
-					* dist / 4, 0xffffffff, &data);
+			aux_matrix(data, matrix, dist);
 			data.y += dist;
 			data.j++;
 		}
@@ -84,69 +62,16 @@ void	mount_matrix(fdf data, char *file_name, t_pixel **matrix, float dist)
 	close(data.fd);
 }
 
-t_pixel	**malloc_matrix(int rows, int columns)
-{
-	int		i;
-	t_pixel	**matrix;
-
-	matrix = (t_pixel **)malloc(sizeof(t_pixel *) * rows);
-	if (!matrix)
-		return (NULL);
-	i = 0;
-	while (i < rows)
-	{
-		matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * columns);
-		if (!matrix[i])
-			return (NULL);
-		i++;
-	}
-	if (!matrix)
-		return (NULL);
-	return (matrix);
-}
-
-void	move_to_center(t_pixel **map, int rows, int columns, int dist)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (i < rows)
-	{
-		j = 0;
-		while (j < columns)
-		{
-			map[i][j].x += dist;
-			map[i][j].y -= dist;
-			j++;
-		}
-		i++;
-	}
-}
-
 t_pixel	**read_map(char *file_name, int rows, int columns, t_enum dist)
 {
-	fdf	data;
+	t_fetch	data;
 
 	data.rows = rows;
 	data.columns = columns;
 	data.matrix = malloc_matrix(data.rows, data.columns);
 	if (!data.matrix)
 		return (NULL);
-	if (rows >= 1000 || columns >= 1000)
-		mount_matrix(data, file_name, data.matrix, dist.case_1);
-	else if (rows >= 500 || columns >= 500)
-		mount_matrix(data, file_name, data.matrix, dist.case_2);
-	else if (rows >= 300 || columns >= 300)
-		mount_matrix(data, file_name, data.matrix, dist.case_3);
-	else if (rows > 150 || columns > 150)
-		mount_matrix(data, file_name, data.matrix, dist.case_4);
-	else if (rows >= 100 || columns >= 100)
-		mount_matrix(data, file_name, data.matrix, dist.case_5);
-	else if (rows >= 30 || columns >= 30)
-		mount_matrix(data, file_name, data.matrix, dist.case_6);
-	else if (rows <= 30 || columns <= 30)
-		mount_matrix(data, file_name, data.matrix, dist.case_7);
+	set_dist_to_map(file_name, data, dist);
 	move_to_center(data.matrix, rows, columns, (rows + columns) / 4);
 	return (data.matrix);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_pixel.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/24 09:40:26 by eduardocoel       #+#    #+#             */
-/*   Updated: 2024/02/07 09:54:01 by eduardocoel      ###   ########.fr       */
+/*   Created: 2024/02/07 20:16:59 by ecoelho-          #+#    #+#             */
+/*   Updated: 2024/02/07 21:16:20 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	calc_bre(t_params *node, int i, int j, t_pixel **matrix)
 		node->slo_error = -node->dy / 2;
 }
 
-void	put_pixel(t_params node, fdf *data, uint32_t color)
+void	put_pixel(t_params node, t_fetch *data, uint32_t color)
 {
 	while ((node.x1 - node.x2) || (node.y1 - node.y2))
 	{
@@ -54,7 +54,7 @@ void	put_pixel(t_params node, fdf *data, uint32_t color)
 	}
 }
 
-void	set_pixel(fdf data, t_pixel **matrix)
+void	set_pixel(t_fetch data, t_pixel **matrix)
 {
 	t_params	node;
 
@@ -76,10 +76,8 @@ void	set_pixel(fdf data, t_pixel **matrix)
 				calc_bre(&node, node.i + 1, node.j, matrix);
 				put_pixel(node, &data, matrix[node.i][node.j].color);
 			}
-			printf("this is the color = %d \n", matrix[node.i][node.j].color);
 			node.j++;
 		}
 		node.i++;
 	}
-	
 }

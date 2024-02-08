@@ -1,35 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   isometric.c                                        :+:      :+:    :+:   */
+/*   utils_to_main.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/06 22:03:32 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/07 20:47:00 by ecoelho-         ###   ########.fr       */
+/*   Created: 2024/02/07 20:19:13 by ecoelho-          #+#    #+#             */
+/*   Updated: 2024/02/07 20:28:56 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
+#include "../fdf.h"
 
-void	isometric(t_pixel **matrix, int rows, int columns)
+void	ft_error(char *str)
+{
+	ft_putstr_fd(str, 1);
+	exit(EXIT_FAILURE);
+}
+
+void	free_matrix(t_pixel **matrix, int rows)
 {
 	int	i;
-	int	j;
 
 	i = 0;
 	while (i < rows)
 	{
-		j = 0;
-		while (j < columns)
-		{
-			matrix[i][j].x = (matrix[i][j].x - matrix[i][j].y) * cos(0.6);
-			matrix[i][j].y = (matrix[i][j].x + matrix[i][j].y) * sin(0.5)
-				- matrix[i][j].z;
-			matrix[i][j].x += 600;
-			matrix[i][j].y += 300;
-			j++;
-		}
+		free(matrix[i]);
 		i++;
 	}
+	free(matrix);
+}
+
+t_enum	set_enum_struct(void)
+{
+	t_enum	enm;
+
+	enm.case_1 = 0.5;
+	enm.case_2 = 1;
+	enm.case_3 = 2;
+	enm.case_4 = 4;
+	enm.case_5 = 7;
+	enm.case_6 = 15;
+	enm.case_7 = 25;
+	return (enm);
 }
