@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   read_map.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 11:11:06 by eduardocoel       #+#    #+#             */
-/*   Updated: 2024/02/07 21:43:35 by ecoelho-         ###   ########.fr       */
+/*   Updated: 2024/02/08 13:00:11 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ void	aux_matrix(t_fetch data, t_pixel **matrix, float dist)
 {
 	data.hex = ft_split(data.split[data.j], ',');
 	if (data.hex[1])
-		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 15,
 			(ft_atoi_base(data.hex[1], 16) << 8) | 0xff, &data);
 	else
-		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 15,
 			0xFFFFFFFF, &data);
 }
 
@@ -72,6 +72,7 @@ t_pixel	**read_map(char *file_name, int rows, int columns, t_enum dist)
 	if (!data.matrix)
 		return (NULL);
 	set_dist_to_map(file_name, data, dist);
+	isometric(data.matrix, rows, columns);
 	move_to_center(data.matrix, rows, columns, (rows + columns) / 4);
 	return (data.matrix);
 }
