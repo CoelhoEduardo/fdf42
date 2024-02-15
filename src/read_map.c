@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   read_map.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 11:11:06 by eduardocoel       #+#    #+#             */
-/*   Updated: 2024/02/08 13:00:11 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/15 20:40:44 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ void	aux_matrix(t_fetch data, t_pixel **matrix, float dist)
 {
 	data.hex = ft_split(data.split[data.j], ',');
 	if (data.hex[1])
-		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 15,
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
 			(ft_atoi_base(data.hex[1], 16) << 8) | 0xff, &data);
 	else
-		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 15,
+		set(&matrix[data.i][data.j], ft_atoi(data.split[data.j]) * dist / 4,
 			0xFFFFFFFF, &data);
 }
 
@@ -40,6 +40,8 @@ void	mount_matrix(t_fetch data, char *file_name, t_pixel **matrix,
 		float dist)
 {
 	data.fd = open(file_name, O_RDONLY);
+	if (data.fd < 0)
+		ft_error("Don't valid");
 	data.x = 0;
 	data.i = 0;
 	while (data.i < data.rows)

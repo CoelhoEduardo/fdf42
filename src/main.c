@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:17:06 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/15 17:54:00 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/15 20:42:20 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,17 @@ static void	ft_hook(void *param)
 		mlx_close_window(data.mlx);
 }
 
-void	config_rend(t_fetch data, char *argv)
+void	config_rend(char *argv)
 {
+	t_fetch	data;
 	t_enum	enm;
 
 	enm = set_enum_struct();
 	data.rows = get_rows(argv);
 	data.columns = get_columns(argv);
 	data.matrix = read_map(argv, data.rows, data.columns, enm);
+	if (!data.matrix)
+		ft_error("Not valid");
 	data.mlx = mlx_init(WIDTH, HEIGHT, "FDF", true);
 	if (!data.mlx)
 		ft_error("MLX fails to initialize");
@@ -48,14 +51,12 @@ void	config_rend(t_fetch data, char *argv)
 
 int32_t	main(int argc, char **argv)
 {
-	t_fetch	data;
-
 	if (argc != 2)
 	{
 		ft_putstr_fd("Invalid numbers of arguments", 1);
 		return (2);
 	}
 	check_file(argv[1]);
-	config_rend(data, argv[1]);
+	config_rend(argv[1]);
 	return (EXIT_SUCCESS);
 }

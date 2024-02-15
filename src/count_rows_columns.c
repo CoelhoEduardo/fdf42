@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   count_rows_columns.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
+/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:31:01 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/15 17:38:39 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/15 20:39:07 by ecoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ int	get_rows(char *file_name)
 	char	*gnl;
 
 	fd = open(file_name, O_RDONLY);
+	if (fd < 0)
+		ft_error("error \n");
 	row = 0;
 	gnl = get_next_line(fd);
 	free(gnl);
@@ -47,6 +49,8 @@ int	get_rows(char *file_name)
 		gnl = get_next_line(fd);
 		free(gnl);
 	}
+	if (row <= 1)
+		ft_error("Nothing to read \n");
 	close(fd);
 	return (row);
 }
