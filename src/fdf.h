@@ -6,7 +6,7 @@
 /*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:47:19 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/08 12:29:05 by eduardocoel      ###   ########.fr       */
+/*   Updated: 2024/02/15 11:28:55 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,12 @@ typedef struct s_fetch
 // main
 void			ft_error(char *str);
 void			free_matrix(t_pixel **matrix, int rows);
+void			check_file(char *file_name);
 t_enum			set_enum_struct(void);
 
 // count_rows_collumns
 int				get_rows(char *file_name);
-int				get_column(char *file_name);
+int				get_columns(char *file_name);
 
 // read_map
 t_pixel			**malloc_matrix(int rows, int columns);

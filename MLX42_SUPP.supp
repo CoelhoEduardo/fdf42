@@ -54,13 +54,27 @@
    fun:glfwCreateWindow
    ...
 }
-
 {
  <MLX_CODAM>
-   Memcheck:Cond
-   fun:mlx_lstremove
-   fun:mlx_delete_image
-   fun:ft_hook
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
    fun:mlx_loop
-   fun:config_rend
+   ...
+}
+{
+ <MLX_CODAM>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:call_init
+   ...
+}
+{
+ <MLX_CODAM>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_dl_open
+   ...
 }

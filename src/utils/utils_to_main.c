@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_to_main.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:19:13 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/07 20:28:56 by ecoelho-         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:15:02 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,17 @@ void	free_matrix(t_pixel **matrix, int rows)
 		i++;
 	}
 	free(matrix);
+}
+
+void	check_file(char *file_name)
+{
+	char	*check_type;
+	char	*ret_type;
+
+	check_type = ".fdf";
+	ret_type = ft_strnstr(file_name, check_type, ft_strlen(file_name));
+	if (ret_type == NULL)
+		ft_error("Invalid File Type \n");
 }
 
 t_enum	set_enum_struct(void)

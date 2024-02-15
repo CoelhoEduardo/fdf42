@@ -36,6 +36,6 @@ fclean: clean
 re:	clean all
 
 valgrind: all
-	valgrind --leak-check=full --gen-suppressions=all --suppressions=./MLX42_SUPP.supp ./FDF.a test_maps/42.fdf
+	valgrind --leak-check=full --gen-suppressions=all --show-leak-kinds=all --suppressions=./MLX42_SUPP.supp ./FDF.a test_maps/42.fdf
 
 .PHONY: all, clean, fclean, re, libmlx, libft

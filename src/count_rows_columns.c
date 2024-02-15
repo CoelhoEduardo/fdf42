@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   count_rows_collumns.c                              :+:      :+:    :+:   */
+/*   count_rows_columns.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:31:01 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/07 20:31:06 by ecoelho-         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:38:39 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	get_rows(char *file_name)
 	return (row);
 }
 
-int	get_column(char *file_name)
+int	get_columns(char *file_name)
 {
 	int		column;
 	int		fd;

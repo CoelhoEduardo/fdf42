@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_to_read_map.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ecoelho- <ecoelho-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eduardocoelho <eduardocoelho@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 20:38:22 by ecoelho-          #+#    #+#             */
-/*   Updated: 2024/02/07 21:17:25 by ecoelho-         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:48:07 by eduardocoel      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ t_pixel	**malloc_matrix(int rows, int columns)
 	int		i;
 	t_pixel	**matrix;
 
-	matrix = (t_pixel **)malloc(sizeof(t_pixel *) * rows);
+	matrix = (t_pixel **)ft_calloc(rows, sizeof(t_pixel));
 	if (!matrix)
 		return (NULL);
 	i = 0;
 	while (i < rows)
 	{
-		matrix[i] = (t_pixel *)malloc(sizeof(t_pixel) * columns);
+		matrix[i] = (t_pixel *)ft_calloc(columns, sizeof(t_pixel));
 		if (!matrix[i])
 			return (NULL);
 		i++;
