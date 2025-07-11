@@ -12,10 +12,19 @@ OBJS := $(addprefix $(SRCS_PATH), $(SRCS:.c=.o))
 
 all: libmlx libft $(NAME)
 
-libmlx:
+# Clone MLX42 if not present, using a stamp file
+.MLX42_cloned:
+	git clone git@github.com:codam-coding-college/MLX42.git $(LIBMLX)
+	touch $@
+
+# Clone libft if not present, using a stamp file
+.libft_cloned:
+	git clone git@github.com:CoelhoEduardo/libft.git $(LIBFT)
+
+libmlx: .MLX42_cloned
 	@cmake $(LIBMLX) -B $(LIBMLX)/build && make -C $(LIBMLX)/build -j4
 
-libft:
+libft: .libft_cloned
 	@make -C $(LIBFT)
 
 %.o: %.c 
@@ -27,15 +36,19 @@ $(NAME): $(OBJS)
 clean:
 	@rm -rf $(OBJS)
 	@rm -rf $(LIBMLX)/build
+	@rm	-rf .MLX42_cloned
 	@make -C $(LIBFT) fclean
 
 fclean: clean
 	@rm -rf $(NAME)
+	@rm -rf $(LIBMLX)
+	@rm	-rf .MLX42_cloned
 	@make -C $(LIBFT) fclean
+	@rm -rf $(LIBFT)
 
 re:	clean all
 
 valgrind: all
 	valgrind --leak-check=full --gen-suppressions=all --show-leak-kinds=all --suppressions=./MLX42_SUPP.supp ./FDF.a test_maps/42.fdf
 
-.PHONY: all, clean, fclean, re, libmlx, libft
+.PHONY: all clean fclean re libmlx libft
